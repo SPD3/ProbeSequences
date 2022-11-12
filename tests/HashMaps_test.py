@@ -1,5 +1,5 @@
 import unittest
-from ProbeSequences.HashV1 import HashV1
+from ..HashV1 import HashV1
 
 def test5():
     assert 5 == 5 
