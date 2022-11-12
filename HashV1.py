@@ -1,6 +1,12 @@
 
 
 class HashV1:
-    
-    def doSomething(self):
-        return 5
+
+    def get(self, key):
+        return None
+
+    def add(self, key, value):
+        return
+        
+    def delete(self, key):
+        return
