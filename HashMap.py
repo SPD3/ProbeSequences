@@ -9,7 +9,7 @@ class HashMap:
         self._num_of_elements = 0
     
     
-    def _resize(self, new_size:int):
+    def _resize(self, new_size:int) -> None:
         assert new_size >= self._num_of_slots_taken
         key_val_pairs = self._get_all_key_val_pairs()
 
@@ -21,7 +21,7 @@ class HashMap:
         self._num_of_slots_taken = self._num_of_elements
 
 
-    def _get_all_key_val_pairs(self):
+    def _get_all_key_val_pairs(self) -> list[tuple[str, int]]:
         key_val_pairs = [None] * self._num_of_elements
         key_val_pair_count = 0
         for i in range(len(self._arr)):
@@ -34,16 +34,16 @@ class HashMap:
         return key_val_pairs
 
 
-    def _is_arr_index_filled(self, index:int):
+    def _is_arr_index_filled(self, index:int) -> bool:
         return self._arr[index] != None
 
 
-    def _is_arr_index_deleted(self, index:int):
+    def _is_arr_index_deleted(self, index:int) -> bool:
         key, val = self._arr[index]
         return key == None and val == None
 
 
-    def _reset_arr_to_size(self, size:int):
+    def _reset_arr_to_size(self, size:int) -> None:
         new_arr = [None] * size
         self._size_powers_arr = [1] * size
         self._number_of_possible_probe_sequences = 1
@@ -53,7 +53,7 @@ class HashMap:
         self._arr = new_arr
 
 
-    def _insert_into_arr(self, key:str, val:object):
+    def _insert_into_arr(self, key:str, val:object) -> bool:
         for index in self._create_probe_sequence(key):
             if not self._is_arr_index_filled(index):
                 self._arr[index] = (key, val)
@@ -61,7 +61,7 @@ class HashMap:
         return False
 
 
-    def _create_probe_sequence(self, key:str):
+    def _create_probe_sequence(self, key:str) -> int:
         probe_index = hash(key) % self._number_of_possible_probe_sequences
         swap_mem = 0
         arr_size = len(self._arr)
@@ -80,7 +80,7 @@ class HashMap:
             continue
 
     def _get_index_adjusted_for_swaps(self, pre_swap_index:int,\
-         swap_mem:int):
+         swap_mem:int) -> int:
         arr_size = len(self._arr)
         swap_adjustment = (swap_mem // self._size_powers_arr[pre_swap_index]) \
             % arr_size
@@ -89,7 +89,7 @@ class HashMap:
     
 
     def _get_swap_encoding(self, num_of_valid_indices:int, \
-         pre_swap_index:int, swap_mem:int):
+         pre_swap_index:int, swap_mem:int) -> int:
         last_index = self._get_index_adjusted_for_swaps(\
             num_of_valid_indices - 1, swap_mem)
         arr_size = len(self._arr)
@@ -103,7 +103,7 @@ class HashMap:
         return swap_mem
 
 
-    def get(self, key:str):
+    def get(self, key:str) -> int:
         for index in self._create_probe_sequence(key):
             if not self._is_arr_index_filled(index):
                 return None
@@ -114,17 +114,15 @@ class HashMap:
         return None
 
 
-    def add(self, key:str, value:object):
+    def set(self, key:str, value:object) -> None:
         if self._num_of_slots_taken == len(self._arr):
             self._resize(len(self._arr) * 2)
         if self._insert_into_arr(key, value):
             self._num_of_slots_taken += 1
             self._num_of_elements += 1
-            return True
-        return False
         
         
-    def delete(self, key:int):
+    def delete(self, key:int) -> bool:
         for index in self._create_probe_sequence(key):
             if not self._is_arr_index_filled(index):
                 return False
@@ -138,5 +136,5 @@ class HashMap:
         return False
 
 
-    def _set_index_as_deleted(self, index:int):
+    def _set_index_as_deleted(self, index:int) -> None:
         self._arr[index] = (None, None)
