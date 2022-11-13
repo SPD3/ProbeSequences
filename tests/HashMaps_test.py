@@ -59,3 +59,18 @@ def test_probe_sequence_generation():
     test_probe_sequence_with_size_exponent(2)
     test_probe_sequence_with_size_exponent(5)
     test_probe_sequence_with_size_exponent(8)
+
+def test_probe_sequence_uniqueness():
+    hash_map = HashMap()
+    num_of_values = 2**8
+    for i in range(num_of_values):
+        hash_map.set(str(i), i)
+    
+    prevSequences = set()
+
+    for i in range(num_of_values):
+        probe_sequence = []
+        for index in hash_map._create_probe_sequence(str(i)):
+            probe_sequence.append(index)
+        assert tuple(probe_sequence) not in prevSequences
+        prevSequences.add(tuple(probe_sequence))
