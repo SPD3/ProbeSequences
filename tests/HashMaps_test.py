@@ -1,4 +1,4 @@
-from ..HashV1 import HashV1
+from ..HashMap import HashMap
 import random
 
 def test5():
@@ -46,14 +46,14 @@ def deletion_tests(hash_map):
 
 def test_hash_map():
 
-    hashV1 = HashV1()
+    hashV1 = HashMap()
     insertion_tests(hashV1)
-    hashV1 = HashV1()
+    hashV1 = HashMap()
     deletion_tests(hashV1)
 
 def test_probe_sequence_generation():
     def test_probe_sequence_with_size_exponent(size_exponent):
-        hash_map = HashV1()
+        hash_map = HashMap()
         num_of_values = 2**size_exponent
         for i in range(num_of_values):
             hash_map.add(str(i), i)

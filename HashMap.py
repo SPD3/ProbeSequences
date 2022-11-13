@@ -1,6 +1,6 @@
 
 
-class HashV1:
+class HashMap:
     def __init__(self) -> None:
         self._arr = [None] * 2
         self._number_of_possible_probe_sequences = 2
@@ -130,8 +130,7 @@ class HashV1:
                 return False
             curr_key, _ = self._arr[index]
             if curr_key == key:
-                #self.__set_index_as_deleted__(index)
-                self._arr[index] = (None, None)
+                self._set_index_as_deleted(index)
                 self._num_of_elements -= 1
                 if self._num_of_elements <= (len(self._arr) // 4):
                     self._resize(len(self._arr) // 2)
@@ -139,5 +138,5 @@ class HashV1:
         return False
 
 
-    def _set_index_as_deleted__(self, index:int):
+    def _set_index_as_deleted(self, index:int):
         self._arr[index] = (None, None)
