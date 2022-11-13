@@ -11,26 +11,26 @@ def setup_hash_map(hash_map):
 def insertion_tests(hash_map):
     assert hash_map.get("abc") is None
     
-    hash_map.add("abc", 1)
+    assert hash_map.add("abc", 1)
     assert hash_map.get("abc") == 1
 
-    hash_map.add("def", 3)
+    assert hash_map.add("def", 3)
     assert hash_map.get("def") == 3
 
     setup_hash_map(hash_map)
 
     for i in range(20):
         val = random.randint(0,999)
-        assert hash_map.get(str(val)) == val, ("Val: " + str(val))
+        assert hash_map.get(str(val)) == val, ("Val: " + str(val) + "\ni: " + str(i))
 
 def deletionTests(hash_map):
     assert hash_map.get("abc") is None
     hash_map.add("abc", 1)
     assert hash_map.get("abc") == 1
-    hash_map.delete("abc")
+    assert hash_map.delete("abc")
     assert hash_map.get("abc") is None
 
-    hash_map.delete("efg")
+    assert not hash_map.delete("efg")
 
     setup_hash_map(hash_map)
     for i in range(250, 750):
@@ -45,9 +45,10 @@ def deletionTests(hash_map):
         if val >= 250:
             val = val + 500
         assert hash_map.get(str(val)) == val, ("Val: " + str(val))
-    
 
 def testHashV1():
+
     hashV1 = HashV1()
     insertion_tests(hashV1)
+    hashV1 = HashV1()
     deletionTests(hashV1)
