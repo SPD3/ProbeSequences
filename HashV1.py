@@ -2,117 +2,142 @@
 
 class HashV1:
     def __init__(self) -> None:
-        self.arr = [None] * 2
-        self.number_of_possible_probe_sequences = 2
-        self.size_powers_arr = [1,2]
-        self.num_of_slots_taken = 0
-        self.num_of_elements = 0
+        self._arr = [None] * 2
+        self._number_of_possible_probe_sequences = 2
+        self._size_powers_arr = [1,2]
+        self._num_of_slots_taken = 0
+        self._num_of_elements = 0
     
     
-    def __resize__(self, new_size):
-        assert new_size >= self.num_of_slots_taken
-        key_val_pairs = self.__get_all_key_val_pairs__()
+    def _resize(self, new_size:int):
+        assert new_size >= self._num_of_slots_taken
+        key_val_pairs = self._get_all_key_val_pairs()
 
-        self.__reset_arr_to_size__(new_size)
+        self._reset_arr_to_size(new_size)
 
         for key, val in key_val_pairs:
-            assert self.__insert_into_arr__(key, val)
+            assert self._insert_into_arr(key, val)
         
-        self.num_of_slots_taken = self.num_of_elements
+        self._num_of_slots_taken = self._num_of_elements
 
 
-    def __get_all_key_val_pairs__(self):
-        key_val_pairs = [None] * self.num_of_elements
+    def _get_all_key_val_pairs(self):
+        key_val_pairs = [None] * self._num_of_elements
         key_val_pair_count = 0
-        for i in range(len(self.arr)):
-            if (not self.__is_arr_index_filled__(i)) or \
-                    self.__is_arr_index_deleted__(i):
+        for i in range(len(self._arr)):
+            if (not self._is_arr_index_filled(i)) or \
+                    self._is_arr_index_deleted(i):
                 continue
-            key_val_pairs[key_val_pair_count] = self.arr[i]
+            key_val_pairs[key_val_pair_count] = self._arr[i]
             key_val_pair_count += 1
         
         return key_val_pairs
 
 
-    def __is_arr_index_filled__(self, index):
-        return self.arr[index] != None
+    def _is_arr_index_filled(self, index:int):
+        return self._arr[index] != None
 
 
-    def __is_arr_index_deleted__(self, index):
-        key, val = self.arr[index]
+    def _is_arr_index_deleted(self, index:int):
+        key, val = self._arr[index]
         return key == None and val == None
 
 
-    def __reset_arr_to_size__(self, size):
+    def _reset_arr_to_size(self, size:int):
         new_arr = [None] * size
-        self.size_powers_arr = [1] * size
-        self.number_of_possible_probe_sequences = 1
+        self._size_powers_arr = [1] * size
+        self._number_of_possible_probe_sequences = 1
         for i in range(1,size):
-            self.size_powers_arr[i] = self.size_powers_arr[i] * size
-            self.number_of_possible_probe_sequences *= (i + 1)
-        self.arr = new_arr
+            self._size_powers_arr[i] = self._size_powers_arr[i-1] * size
+            self._number_of_possible_probe_sequences *= (i + 1)
+        self._arr = new_arr
 
 
-    def __insert_into_arr__(self, key, val):
-        for index in self.__create_probe_sequence__(key, len(self.arr)):
-            if not self.__is_arr_index_filled__(index):
-                self.arr[index] = (key, val)
+    def _insert_into_arr(self, key:str, val:object):
+        for index in self._create_probe_sequence(key):
+            if not self._is_arr_index_filled(index):
+                self._arr[index] = (key, val)
                 return True
         return False
 
 
-    def __create_probe_sequence__(self, key, original_arr_size):
-        probe_index = hash(key) % self.number_of_possible_probe_sequences
+    def _create_probe_sequence(self, key:str):
+        probe_index = hash(key) % self._number_of_possible_probe_sequences
         swap_mem = 0
+        arr_size = len(self._arr)
 
-        for i in range(original_arr_size):
-            num_of_valid_indices = original_arr_size - i
+        for i in range(arr_size):
+            num_of_valid_indices = arr_size - i
+
             pre_swap_index = probe_index % num_of_valid_indices
             probe_index // num_of_valid_indices
 
-            swap_adjustment = (swap_mem // self.size_powers_arr[pre_swap_index]) % original_arr_size
-            index = (pre_swap_index + swap_adjustment) % original_arr_size
-            
+            index = self._get_index_adjusted_for_swaps(pre_swap_index, swap_mem)
             yield index
 
-            new_swap_adjustment = (num_of_valid_indices - 1) - pre_swap_index
-            assert new_swap_adjustment >= 0
-            swap_mem += new_swap_adjustment * self.size_powers_arr[pre_swap_index]
+            swap_mem = self._get_swap_encoding(num_of_valid_indices, \
+                pre_swap_index, swap_mem)
+            continue
+
+    def _get_index_adjusted_for_swaps(self, pre_swap_index:int,\
+         swap_mem:int):
+        arr_size = len(self._arr)
+        swap_adjustment = (swap_mem // self._size_powers_arr[pre_swap_index]) \
+            % arr_size
+        index = (pre_swap_index + swap_adjustment) % arr_size
+        return index
+    
+
+    def _get_swap_encoding(self, num_of_valid_indices:int, \
+         pre_swap_index:int, swap_mem:int):
+        last_index = self._get_index_adjusted_for_swaps(\
+            num_of_valid_indices - 1, swap_mem)
+        arr_size = len(self._arr)
+
+        swap_encoding = (last_index - pre_swap_index) % arr_size
+        curr_pre_swap_encoding = swap_mem // \
+            self._size_powers_arr[pre_swap_index] % arr_size
+
+        swap_mem += (swap_encoding - curr_pre_swap_encoding) * \
+            self._size_powers_arr[pre_swap_index]
+        return swap_mem
 
 
-    def get(self, key):
-        for index in self.__create_probe_sequence__(key, original_arr_size = len(self.arr)):
-            if not self.__is_arr_index_filled__(index):
+    def get(self, key:str):
+        for index in self._create_probe_sequence(key):
+            if not self._is_arr_index_filled(index):
                 return None
-            curr_key, current_val = self.arr[index]
+            curr_key, current_val = self._arr[index]
             if curr_key == key:
                 return current_val
+
         return None
 
 
-    def add(self, key, value):
-        if self.num_of_slots_taken == len(self.arr):
-            self.__resize__(len(self.arr) * 2)
-        if self.__insert_into_arr__(key, value):
-            self.num_of_slots_taken += 1
-            self.num_of_elements += 1
+    def add(self, key:str, value:object):
+        if self._num_of_slots_taken == len(self._arr):
+            self._resize(len(self._arr) * 2)
+        if self._insert_into_arr(key, value):
+            self._num_of_slots_taken += 1
+            self._num_of_elements += 1
             return True
         return False
         
         
-    def delete(self, key):
-        for index in self.__create_probe_sequence__(key, len(self.arr)):
-            if not self.__is_arr_index_filled__(index):
+    def delete(self, key:int):
+        for index in self._create_probe_sequence(key):
+            if not self._is_arr_index_filled(index):
                 return False
-            curr_key, _ = self.arr[index]
+            curr_key, _ = self._arr[index]
             if curr_key == key:
-                self.__set_index_as_deleted__(index)
-                self.num_of_elements -= 1
-                if self.num_of_elements <= (len(self.arr) // 4):
-                    self.__resize__(len(self.arr) // 2)
+                #self.__set_index_as_deleted__(index)
+                self._arr[index] = (None, None)
+                self._num_of_elements -= 1
+                if self._num_of_elements <= (len(self._arr) // 4):
+                    self._resize(len(self._arr) // 2)
                 return True
         return False
 
 
-    def __set_index_as_deleted__(self, index):
-        self.arr[index] = (None, None)
+    def _set_index_as_deleted__(self, index:int):
+        self._arr[index] = (None, None)
