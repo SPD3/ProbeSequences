@@ -2,8 +2,8 @@ Sean Doyle
 spd7416@nyu.edu
 
 The goal of this project was to implement a probe sequence algorithm that would 
-allow for all n! possible probe sequences to be generated. This was done within 
-the context of a HashMap, and main.py shows some example code of the HashMap 
+allow for all n! possible probe sequences to be generated within an array of fixed size n. This was done within 
+the context of a HashMap, and main.py shows some example code of the HashMap that was created
 being used.
 
 For an array of size n, the maximum possible number of probe sequences that can 
@@ -12,23 +12,23 @@ because each element in the probe sequence eliminates 1 possible index from each
 of the following probe sequence values which results in a factorial. For 
 example, in an array of size 4 the first element in a probe sequence has 4 
 different options(0-3 inclusive) but once a value is picked for the first 
-element, the next element only has 3 different options if the probe sequence is
+element, the next element only has 3 different options. If the probe sequence is
 constrained to unique values which is optimal when hashing a value within an 
-array.
+array this results in n! possible probe sequences.
 
 One algorithm for generating a probe sequence on a key being hashed into an array
 is to hash the key to a value less than the size of the array and then increment 
 the probe sequence by 1 across all indices of the array. This algorithm does 
 produce a probe sequence that covers all possible indices in the array and 
-produces unique elements within the probe sequence however it only has the 
+produces unique elements within the probe sequence, however, it only has the 
 opportunity to generate n different probe sequences. This is because the 
 starting value that the key is hashed to determines the entire probe sequence so 
 the number of different probe sequences is limited to the n different possible 
 values that the key can be hashed to.
 
 The algorithm that was developed within this project was designed to cover all 
-n! possible probe sequences. This was done by hashing the key value being 
-inserted into the hashMap into a value between 0 and n!. This value determined 
+n! possible probe sequences. This was done by hashing the key being 
+inserted into the HashMap to a value between 0 and n!. This value determined 
 the entirety of the probe sequence, and each probe sequence generated from a 
 value between 0 and n! was unique. 
 
